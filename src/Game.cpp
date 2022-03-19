@@ -32,12 +32,14 @@ Game::Game(
       // https://en.cppreference.com/w/cpp/utility/move
       _execute_attacker_strategy(std::move(execute_attacker_strategy)),
       _execute_defender_strategy(std::move(execute_defender_strategy)),
-      _attacker(std::make_shared<Player>('A')),
-      _defender(std::make_shared<Player>('D')),
+      _attacker(std::make_shared<Item>('A', true)),
+      _defender(std::make_shared<Item>('D', true)),
+      _obstacle(std::make_shared<Item>('X', false)),
       _attacker_spy(_attacker),
       _defender_spy(_defender) {
   set_attacker_in_field();
   set_defender_in_field();
+  set_obstacles_in_field();
 }
 
 /*----------------------------------------------------------------------------*/
@@ -51,8 +53,8 @@ void Game::play(size_t max_turns, std::ostream& out) {
   for (size_t turn = 0; turn < max_turns; turn++) {
     out << "Turn " << turn + 1 << "\n";
 
-    move_player(_execute_attacker_strategy, _attacker, _defender_spy);
-    move_player(_execute_defender_strategy, _defender, _attacker_spy);
+    move_item(_execute_attacker_strategy, _attacker, _defender_spy);
+    move_item(_execute_defender_strategy, _defender, _attacker_spy);
 
     out << *this;
 
@@ -118,7 +120,7 @@ void Game::set_attacker_in_field() {
     field_height / 2, 1 // Left side of field
   };
 
-  _field.add_player(_attacker, attacker_initial_position);
+  _field.add_item(_attacker, attacker_initial_position);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -132,7 +134,29 @@ void Game::set_defender_in_field() {
     field_height / 2, field_width - 2 // Right side of field
   };
 
-  _field.add_player(_defender, defender_initial_position);
+  _field.add_item(_defender, defender_initial_position);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void Game::set_obstacles_in_field() {
+  const auto& [ field_height, field_width ] = _field.dimension();
+
+  for (size_t i = 0; i < field_height; i++) {
+    _field.add_item(_obstacle, { i, 0 });
+  }
+
+  for (size_t i = 0; i < field_height; i++) {
+    _field.add_item(_obstacle, { i, field_width-1 });
+  }
+
+  for (size_t j = 0; j < field_width; j++) {
+    _field.add_item(_obstacle, { 0, j });
+  }
+
+  for (size_t j = 0; j < field_width; j++) {
+    _field.add_item(_obstacle, { field_height-1, j });
+  }
 }
 
 /*----------------------------------------------------------------------------*/
@@ -157,15 +181,15 @@ bool Game::has_attacker_arrived_end_field() const {
 
 /*----------------------------------------------------------------------------*/
 
-void Game::move_player(const PlayerStrategy& execute_player_strategy,
-                       const PlayerPtr& player,
-                       Spy& opponent_spy) {
-  assert(player != nullptr);
+void Game::move_item(const PlayerStrategy& execute_item_strategy,
+                     const ItemPtr& item,
+                     Spy& opponent_spy) {
+  assert(item != nullptr);
 
-  direction_t player_direction =
-    execute_player_strategy(player->position(), opponent_spy);
+  direction_t item_direction =
+    execute_item_strategy(item->position(), opponent_spy);
 
-  _field.move_player(player, player_direction);
+  _field.move_item(item, item_direction);
 }
 
 /*----------------------------------------------------------------------------*/

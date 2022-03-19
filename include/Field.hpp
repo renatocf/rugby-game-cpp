@@ -9,7 +9,7 @@
 // Internal headers
 #include "Dimension.hpp"
 #include "Position.hpp"
-#include "Player.hpp"
+#include "Item.hpp"
 
 namespace rugby {
 
@@ -22,7 +22,7 @@ using FieldPtr = std::shared_ptr<Field>;
 // Classes
 
 /**
- * A field is a 2D grid where a list of players play.
+ * A field is a 2D grid where a list of items play.
  */
 class Field {
  public:
@@ -35,8 +35,8 @@ class Field {
   std::ostream& print_info(std::ostream& out) const;
   std::ostream& print_grid(std::ostream& out) const;
 
-  void add_player(const PlayerPtr& player, const position_t& position);
-  void move_player(const PlayerPtr& player, const direction_t& direction);
+  void add_item(const ItemPtr& item, const position_t& position);
+  void move_item(const ItemPtr& item, const direction_t& direction);
 
  private:
   // Constants
@@ -44,11 +44,10 @@ class Field {
 
   // Instance variables
   dimension_t _dimension;
-  std::vector<std::vector<PlayerPtr>> _grid;
+  std::vector<std::vector<ItemPtr>> _grid;
 
   // Concrete methods
-  bool position_is_border(const position_t& p) const;
-  bool position_is_beyond_border(const position_t& p) const;
+  bool position_is_beyond_limits(const position_t& p) const;
 };
 
 // Non-member operators

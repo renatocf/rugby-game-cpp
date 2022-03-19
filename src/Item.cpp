@@ -1,5 +1,5 @@
 // Main header
-#include "Player.hpp"
+#include "Item.hpp"
 
 namespace rugby {
 
@@ -13,27 +13,33 @@ namespace rugby {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-Player::Player(char symbol)
-  : _symbol(symbol), _position(INVALID_POSITION) {
+Item::Item(char symbol, bool is_movable)
+  : _symbol(symbol), _is_movable(is_movable), _position(INVALID_POSITION) {
 }
 
 /*----------------------------------------------------------------------------*/
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-char Player::symbol() const {
+char Item::symbol() const {
   return _symbol;
 }
 
 /*----------------------------------------------------------------------------*/
 
-const position_t& Player::position() const {
+bool Item::is_movable() const {
+  return _is_movable;
+}
+
+/*----------------------------------------------------------------------------*/
+
+const position_t& Item::position() const {
   return _position;
 }
 
 /*----------------------------------------------------------------------------*/
 
-void Player::position(const position_t& new_position) {
+void Item::position(const position_t& new_position) {
   _position = new_position;
 }
 
@@ -41,20 +47,20 @@ void Player::position(const position_t& new_position) {
 /*                            NON-MEMBER OPERATORS                            */
 /*----------------------------------------------------------------------------*/
 
-std::ostream& operator<<(std::ostream& out, const Player& player) {
-  out << player.symbol();
+std::ostream& operator<<(std::ostream& out, const Item& item) {
+  out << item.symbol();
   return out;
 }
 
 /*----------------------------------------------------------------------------*/
 
-std::ostream& operator<<(std::ostream& out, const PlayerPtr& player_ptr) {
-  if (player_ptr == nullptr) {
+std::ostream& operator<<(std::ostream& out, const ItemPtr& item_ptr) {
+  if (item_ptr == nullptr) {
     out << ' ';
     return out;
   }
 
-  out << *player_ptr;
+  out << *item_ptr;
   return out;
 }
 

@@ -10,35 +10,37 @@
 namespace rugby {
 
 // Forward declaration
-class Player;
+class Item;
 
 // Aliases
-using PlayerPtr = std::shared_ptr<Player>;
+using ItemPtr = std::shared_ptr<Item>;
 
 // Classes
 
 /**
- * A player is represented by a symbol and its current position in a field.
+ * A item is represented by a symbol and its current position in a field.
  */
-class Player {
+class Item {
  public:
   // Constructors
-  explicit Player(char symbol);
+  explicit Item(char symbol, bool is_movable);
 
   // Concrete methods
   char symbol() const;
+  bool is_movable() const;
   const position_t& position() const;
   void position(const position_t& new_position);
 
  private:
   // Instance variables
   char _symbol;
+  bool _is_movable;
   position_t _position;
 };
 
 // Non-member operators
-std::ostream& operator<<(std::ostream& out, const Player& player);
-std::ostream& operator<<(std::ostream& out, const PlayerPtr& player_ptr);
+std::ostream& operator<<(std::ostream& out, const Item& item);
+std::ostream& operator<<(std::ostream& out, const ItemPtr& item_ptr);
 
 }  // namespace rugby
 

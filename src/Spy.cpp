@@ -6,7 +6,7 @@
 #include <utility>
 
 // Internal headers
-#include "Player.hpp"
+#include "Item.hpp"
 
 // Main header
 #include "Spy.hpp"
@@ -23,13 +23,13 @@ namespace rugby {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-Spy::Spy(PlayerPtr player)
+Spy::Spy(ItemPtr item)
   // std::move allows reusing a copy of an object
   // https://en.cppreference.com/w/cpp/utility/move
-  : _player(std::move(player)),
+  : _item(std::move(item)),
     _number_uses(0) {
-  if (_player == nullptr) {
-    throw std::invalid_argument("Spy cannot receive a null pointer to Player");
+  if (_item == nullptr) {
+    throw std::invalid_argument("Spy cannot receive a null pointer to Item");
   }
 }
 
@@ -37,10 +37,10 @@ Spy::Spy(PlayerPtr player)
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-position_t Spy::player_position() {
-  assert(_player != nullptr);
+position_t Spy::item_position() {
+  assert(_item != nullptr);
   _number_uses++;
-  return _player->position();
+  return _item->position();
 }
 
 /*----------------------------------------------------------------------------*/

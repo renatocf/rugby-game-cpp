@@ -5,7 +5,7 @@
 #include <cstddef>
 
 // Internal headers
-#include "Player.hpp"
+#include "Item.hpp"
 #include "Position.hpp"
 
 namespace rugby {
@@ -13,21 +13,21 @@ namespace rugby {
 // Classes
 
 /**
- * A spy allows retrieving the position of a player and counts
+ * A spy allows retrieving the position of a item and counts
  * the number of accesses.
  */
 class Spy {
  public:
   // Constructors
-  explicit Spy(PlayerPtr player);
+  explicit Spy(ItemPtr item);
 
   // Concrete methods
-  position_t player_position();
+  position_t item_position();
   size_t number_uses() const;
 
  private:
   // Instance variables
-  PlayerPtr _player;
+  ItemPtr _item;
   size_t _number_uses;
 };
 
