@@ -20,10 +20,13 @@ namespace rugby {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-Game::Game(const dimension_t& field_dimension)
+Game::Game(const dimension_t& field_dimension, size_t max_number_spies)
     : _field(field_dimension),
+      _max_number_spies(max_number_spies),
       _attacker(std::make_shared<Player>('A')),
-      _defender(std::make_shared<Player>('D')) {
+      _defender(std::make_shared<Player>('D')),
+      _attacker_spy(_attacker),
+      _defender_spy(_defender) {
   set_attacker_in_field();
   set_defender_in_field();
 }
@@ -43,6 +46,25 @@ void Game::play(size_t max_turns, std::ostream& out) {
     move_defender();
 
     out << *this;
+
+    if (has_spy_exceeded_max_number_uses(_defender_spy)) {
+      out << "GAME OVER! Attacker cheated spying more than "
+          << _max_number_spies
+          << (_max_number_spies == 1UL ? "time" : "times")
+          << "!"
+          << std::endl;
+      return;
+    }
+
+    if (has_spy_exceeded_max_number_uses(_attacker_spy)) {
+      out << "GAME OVER! Defender cheated spying more than "
+          << _max_number_spies
+          << " "
+          << (_max_number_spies == 1UL ? "time" : "times")
+          << "!"
+          << std::endl;
+      return;
+    }
 
     if (has_attacker_arrived_end_field()) {
       out << "GAME OVER! Attacker wins!" << std::endl;
@@ -102,6 +124,12 @@ void Game::set_defender_in_field() {
   };
 
   _field.add_player(_defender, defender_initial_position);
+}
+
+/*----------------------------------------------------------------------------*/
+
+bool Game::has_spy_exceeded_max_number_uses(const Spy& opponent_spy) const {
+  return opponent_spy.number_uses() > _max_number_spies;
 }
 
 /*----------------------------------------------------------------------------*/

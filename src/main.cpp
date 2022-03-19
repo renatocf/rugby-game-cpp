@@ -11,6 +11,7 @@
 
 // Constants
 const rugby::dimension_t STANDARD_FIELD_DIMENSION { 10, 10 };
+const size_t STANDARD_MAX_NUMBER_SPIES { 1 };
 const size_t STANDARD_MAX_TURNS { 42 };
 
 /*----------------------------------------------------------------------------*/
@@ -20,7 +21,8 @@ const size_t STANDARD_MAX_TURNS { 42 };
 int main() {
   std::cout << "Hello, Rugby!\n" << std::endl;
 
-  rugby::Game game(STANDARD_FIELD_DIMENSION);
+  rugby::Game game(STANDARD_FIELD_DIMENSION,
+                   STANDARD_MAX_NUMBER_SPIES);
   game.play(STANDARD_MAX_TURNS);
 
   return EXIT_SUCCESS;
