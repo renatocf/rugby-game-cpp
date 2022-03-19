@@ -26,17 +26,11 @@ Game::Game(
     size_t max_number_spies,
     PlayerStrategy execute_attacker_strategy,
     PlayerStrategy execute_defender_strategy)
-    : _field(field_dimension),
-      _max_number_spies(max_number_spies),
-      // std::move allows reusing a copy of an object
-      // https://en.cppreference.com/w/cpp/utility/move
-      _execute_attacker_strategy(std::move(execute_attacker_strategy)),
-      _execute_defender_strategy(std::move(execute_defender_strategy)),
-      _attacker(std::make_shared<Item>('A', true)),
-      _defender(std::make_shared<Item>('D', true)),
-      _obstacle(std::make_shared<Item>('X', false)),
-      _attacker_spy(_attacker),
-      _defender_spy(_defender) {
+    : Game(field_dimension,
+           max_number_spies,
+           std::move(execute_attacker_strategy),
+           std::move(execute_defender_strategy),
+           nullptr) {
   set_attacker_in_field();
   set_defender_in_field();
   set_obstacles_in_field();
@@ -106,6 +100,29 @@ std::ostream& operator<<(std::ostream& out, const Game& game) {
 /*                                  PRIVATE                                   */
 /* -------------------------------------------------------------------------- */
 /* \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */
+
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
+Game::Game(
+    const dimension_t& field_dimension,
+    size_t max_number_spies,
+    PlayerStrategy execute_attacker_strategy,
+    PlayerStrategy execute_defender_strategy,
+    void* /* dummy */)
+    : _field(field_dimension),
+      _max_number_spies(max_number_spies),
+      // std::move allows reusing a copy of an object
+      // https://en.cppreference.com/w/cpp/utility/move
+      _execute_attacker_strategy(std::move(execute_attacker_strategy)),
+      _execute_defender_strategy(std::move(execute_defender_strategy)),
+      _attacker(std::make_shared<Item>('A', true)),
+      _defender(std::make_shared<Item>('D', true)),
+      _obstacle(std::make_shared<Item>('X', false)),
+      _attacker_spy(_attacker),
+      _defender_spy(_defender) {
+}
 
 /*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */

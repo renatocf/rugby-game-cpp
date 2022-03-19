@@ -58,6 +58,13 @@ class Game {
   Spy _attacker_spy;
   Spy _defender_spy;
 
+  // Constructors
+  Game(const dimension_t& field_dimension,
+       size_t max_number_spies,
+       PlayerStrategy execute_attacker_strategy,
+       PlayerStrategy execute_defender_strategy,
+       void* /* dummy */);
+
   // Concrete methods
   void set_attacker_in_field();
   void set_defender_in_field();
