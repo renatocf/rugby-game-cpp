@@ -6,6 +6,7 @@
 
 // Standard headers
 #include <iostream>
+#include <functional>
 
 // Internal headers
 #include "Dimension.hpp"
@@ -14,6 +15,15 @@
 #include "Spy.hpp"
 
 namespace rugby {
+
+// Aliases
+
+/**
+ * A player strategy is a function to determine the direction of a player
+ * given its current position in a Field. Aditionally, players can spy
+ * on its opponent positions **at most** MAX_NUMBER_SPIES times.
+ */
+using PlayerStrategy = std::function<direction_t(const position_t&, Spy&)>;
 
 // Classes
 
@@ -25,7 +35,9 @@ class Game {
  public:
   // Constructors
   Game(const dimension_t& field_dimension,
-       size_t max_number_spies);
+       size_t max_number_spies,
+       PlayerStrategy execute_attacker_strategy,
+       PlayerStrategy execute_defender_strategy);
 
   // Concrete methods
   void play(size_t max_turns, std::ostream& out = std::cout);
@@ -35,6 +47,9 @@ class Game {
   Field _field;
 
   size_t _max_number_spies;
+
+  PlayerStrategy _execute_attacker_strategy;
+  PlayerStrategy _execute_defender_strategy;
 
   PlayerPtr _attacker;
   PlayerPtr _defender;
@@ -50,8 +65,10 @@ class Game {
   bool has_defender_captured_attacker() const;
   bool has_attacker_arrived_end_field() const;
 
-  void move_attacker();
-  void move_defender();
+  void move_player(
+      const PlayerStrategy& execute_player_strategy,
+      const PlayerPtr& player,
+      Spy& opponent_spy);
 
   // Friendship allows non-member functions to access
   // private fields inside a struct/class

@@ -6,6 +6,8 @@
 #include <iostream>
 
 // Internal headers
+#include "Attacker.hpp"
+#include "Defender.hpp"
 #include "Dimension.hpp"
 #include "Game.hpp"
 
@@ -21,8 +23,12 @@ const size_t STANDARD_MAX_TURNS { 42 };
 int main() {
   std::cout << "Hello, Rugby!\n" << std::endl;
 
-  rugby::Game game(STANDARD_FIELD_DIMENSION,
-                   STANDARD_MAX_NUMBER_SPIES);
+  rugby::Game game(
+      STANDARD_FIELD_DIMENSION,
+      STANDARD_MAX_NUMBER_SPIES,
+      rugby::execute_attacker_strategy,
+      rugby::execute_defender_strategy);
+
   game.play(STANDARD_MAX_TURNS);
 
   return EXIT_SUCCESS;

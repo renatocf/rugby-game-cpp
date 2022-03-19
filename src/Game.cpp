@@ -3,6 +3,7 @@
 #include <cstddef>
 
 // Standard headers
+#include <utility>
 #include <iostream>
 
 // Main header
@@ -20,9 +21,17 @@ namespace rugby {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-Game::Game(const dimension_t& field_dimension, size_t max_number_spies)
+Game::Game(
+    const dimension_t& field_dimension,
+    size_t max_number_spies,
+    PlayerStrategy execute_attacker_strategy,
+    PlayerStrategy execute_defender_strategy)
     : _field(field_dimension),
       _max_number_spies(max_number_spies),
+      // std::move allows reusing a copy of an object
+      // https://en.cppreference.com/w/cpp/utility/move
+      _execute_attacker_strategy(std::move(execute_attacker_strategy)),
+      _execute_defender_strategy(std::move(execute_defender_strategy)),
       _attacker(std::make_shared<Player>('A')),
       _defender(std::make_shared<Player>('D')),
       _attacker_spy(_attacker),
@@ -42,8 +51,8 @@ void Game::play(size_t max_turns, std::ostream& out) {
   for (size_t turn = 0; turn < max_turns; turn++) {
     out << "Turn " << turn + 1 << "\n";
 
-    move_attacker();
-    move_defender();
+    move_player(_execute_attacker_strategy, _attacker, _defender_spy);
+    move_player(_execute_defender_strategy, _defender, _attacker_spy);
 
     out << *this;
 
@@ -148,16 +157,15 @@ bool Game::has_attacker_arrived_end_field() const {
 
 /*----------------------------------------------------------------------------*/
 
-void Game::move_attacker() {
-  // TODO: Implement Attacker logic here
-  _field.move_player(_attacker, DIR::RIGHT);
-}
+void Game::move_player(const PlayerStrategy& execute_player_strategy,
+                       const PlayerPtr& player,
+                       Spy& opponent_spy) {
+  assert(player != nullptr);
 
-/*----------------------------------------------------------------------------*/
+  direction_t player_direction =
+    execute_player_strategy(player->position(), opponent_spy);
 
-void Game::move_defender() {
-  // TODO: Implement Defender logic here
-  _field.move_player(_defender, DIR::LEFT);
+  _field.move_player(player, player_direction);
 }
 
 /*----------------------------------------------------------------------------*/
