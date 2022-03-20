@@ -12,6 +12,7 @@
 #include "Dimension.hpp"
 #include "Field.hpp"
 #include "Item.hpp"
+#include "Map.hpp"
 #include "Spy.hpp"
 
 namespace rugby {
@@ -39,10 +40,18 @@ class Game {
        PlayerStrategy execute_attacker_strategy,
        PlayerStrategy execute_defender_strategy);
 
+  Game(const Map& map,
+       size_t max_number_spies,
+       PlayerStrategy execute_attacker_strategy,
+       PlayerStrategy execute_defender_strategy);
+
   // Concrete methods
   void play(size_t max_turns, std::ostream& out = std::cout);
 
  private:
+  // Constants
+  constexpr static size_t MAX_SINGLE_OCCURRENCE = 1L;
+
   // Instance variables
   Field _field;
 
@@ -69,6 +78,10 @@ class Game {
   void set_attacker_in_field();
   void set_defender_in_field();
   void set_obstacles_in_field();
+
+  bool has_map_exceeded_max_occurrences_of_symbol(
+      const Map& map, char symbol, size_t max_occurrences);
+  void set_item_in_field_from_map(const ItemPtr& item, const Map& map);
 
   bool has_spy_exceeded_max_number_uses(const Spy& opponent_spy) const;
   bool has_defender_captured_attacker() const;

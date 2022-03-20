@@ -37,6 +37,43 @@ Game::Game(
 }
 
 /*----------------------------------------------------------------------------*/
+
+Game::Game(
+    const Map& map,
+    size_t max_number_spies,
+    PlayerStrategy execute_attacker_strategy,
+    PlayerStrategy execute_defender_strategy)
+    : Game(map.dimension(),
+           max_number_spies,
+           std::move(execute_attacker_strategy),
+           std::move(execute_defender_strategy),
+           nullptr) {
+  if (has_map_exceeded_max_occurrences_of_symbol(
+        map, _attacker->symbol(), Game::MAX_SINGLE_OCCURRENCE)) {
+    std::stringstream message_template;
+
+    message_template
+      << "Map exceeded max occurrences of symbol " << _attacker->symbol();
+
+    throw std::runtime_error(message_template.str());
+  }
+
+  if (has_map_exceeded_max_occurrences_of_symbol(
+        map, _defender->symbol(), Game::MAX_SINGLE_OCCURRENCE)) {
+    std::stringstream message_template;
+
+    message_template
+      << "Map exceeded max occurrences of symbol " << _attacker->symbol();
+
+    throw std::runtime_error(message_template.str());
+  }
+
+  set_item_in_field_from_map(_attacker, map);
+  set_item_in_field_from_map(_defender, map);
+  set_item_in_field_from_map(_obstacle, map);
+}
+
+/*----------------------------------------------------------------------------*/
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
@@ -126,6 +163,43 @@ Game::Game(
 
 /*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+bool Game::has_map_exceeded_max_occurrences_of_symbol(
+    const Map& map, char symbol, size_t max_occurrences) {
+  if (max_occurrences == 0) return false;
+
+  const auto& [ map_height, map_width ] = map.dimension();
+
+  size_t item_symbol_occurrences = 0;
+  for (size_t i = 0; i < map_height; i++) {
+    for (size_t j = 0; j < map_width; j++) {
+      if (map[{ i, j }] == symbol) {
+        item_symbol_occurrences++;
+      }
+    }
+  }
+
+  return item_symbol_occurrences > max_occurrences;
+}
+
+/*----------------------------------------------------------------------------*/
+
+void Game::set_item_in_field_from_map(const ItemPtr& item, const Map& map) {
+  // By design, field should have the same dimension as the map
+  assert(_field.dimension() == map.dimension());
+
+  const auto& [ map_height, map_width ] = map.dimension();
+
+  for (size_t i = 0; i < map_height; i++) {
+    for (size_t j = 0; j < map_width; j++) {
+      if (map[{ i, j }] == item->symbol()) {
+        _field.add_item(item, { i, j });
+      }
+    }
+  }
+}
+
 /*----------------------------------------------------------------------------*/
 
 void Game::set_attacker_in_field() {
